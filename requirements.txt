@@ -10,4 +10,6 @@ edge-tts==7.2.8
 yt-dlp==2024.12.6
 feedparser==6.0.10
 PyInstaller==6.10.0
-google-generativeai==0.3.0
+google-generativeai==0.6.0
+sounddevice==0.4.7
+scipy==1.14.0
