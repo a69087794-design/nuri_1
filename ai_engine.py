@@ -113,7 +113,11 @@ class AIEngine:
                 max_tokens=1024,
                 messages=[{"role": "user", "content": prompt}]
             )
-            return message.content[0].text
+            # FIXED: Safe attribute access
+            if message.content and len(message.content) > 0:
+                content = message.content[0]
+                return getattr(content, 'text', str(content))
+            return "Groq javob bermadi"
         except Exception as e:
             raise e
 
@@ -121,7 +125,10 @@ class AIEngine:
         """Gemini javob"""
         try:
             response = self.gemini_client.generate_content(prompt)
-            return response.text
+            # FIXED: Check if response and text exist
+            if response and hasattr(response, 'text') and response.text:
+                return response.text
+            return "Gemini javob bermadi"
         except Exception as e:
             raise e
 
