@@ -25,13 +25,16 @@ def build_exe():
     print("NURI EXE YASALMOQDA...")
     print("="*50 + "\n")
     
-    # PyInstaller parametrlari
+    # PyInstaller parametrlari - FIXED with all required imports
     args = [
-        'gui.py',  # asosiy entry point
+        'gui.py',
         '--name=NURI',
-        '--onefile',  # bitta EXE faylga
-        '--windowed',  # oyna shaklida (CLI yo'q)
+        '--onefile',
+        '--windowed',
         '--hidden-import=PyQt5',
+        '--hidden-import=PyQt5.QtWidgets',
+        '--hidden-import=PyQt5.QtCore',
+        '--hidden-import=PyQt5.QtGui',
         '--hidden-import=aiogram',
         '--hidden-import=aiohttp',
         '--hidden-import=groq',
@@ -39,6 +42,14 @@ def build_exe():
         '--hidden-import=edge_tts',
         '--hidden-import=yt_dlp',
         '--hidden-import=feedparser',
+        '--hidden-import=sounddevice',
+        '--hidden-import=scipy',
+        '--hidden-import=scipy.io',
+        '--hidden-import=scipy.io.wavfile',
+        '--hidden-import=google',
+        '--hidden-import=google.generativeai',
+        '--hidden-import=dotenv',
+        '--hidden-import=importlib.util',
         '--collect-all=PyQt5',
         '--collect-all=aiogram',
         '--collect-all=aiohttp',
@@ -47,9 +58,10 @@ def build_exe():
         '--collect-all=edge_tts',
         '--collect-all=yt_dlp',
         '--collect-all=feedparser',
+        '--collect-all=google',
         '--distpath=dist',
         '--specpath=.',
-        '-y',  # hech qanday so'rovlarni bekor qilish
+        '-y',
     ]
     
     # PyInstaller ishga tushirish
