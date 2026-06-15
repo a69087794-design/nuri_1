@@ -1,0 +1,112 @@
+name: Build NURI EXE
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test-code:
+    name: Code Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Verify imports
+      run: |
+        python -c "import ai_engine; print('✓ ai_engine')"
+        python -c "import voice_engine; print('✓ voice_engine')"
+        python -c "import main; print('✓ main')"
+        python -c "import memory_module; print('✓ memory_module')"
+        python -c "import identity_engine; print('✓ identity_engine')"
+        echo "✓ Barcha modular import qilindi!"
+
+  build-windows:
+    name: Build EXE (Windows)
+    runs-on: windows-latest
+    needs: test-code
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Build EXE
+      run: python build_exe.py
+    
+    - name: Verify build
+      run: |
+        if (Test-Path "dist\NURI.exe") {
+          echo "✅ EXE yaratildi!"
+          $size = (Get-Item "dist\NURI.exe").Length / 1MB
+          echo "Hajmi: $($size) MB"
+        } else {
+          echo "❌ EXE topilmadi!"
+          exit 1
+        }
+    
+    - name: Upload EXE
+      uses: actions/upload-artifact@v3
+      if: success()
+      with:
+        name: NURI-Windows
+        path: dist/NURI.exe
+
+  build-linux:
+    name: Build Binary (Linux)
+    runs-on: ubuntu-latest
+    needs: test-code
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Build Binary
+      run: python build_exe.py
+    
+    - name: Verify build
+      run: |
+        if [ -f "dist/NURI" ]; then
+          echo "✅ Binary yaratildi!"
+          ls -lh dist/NURI
+        else
+          echo "❌ Binary topilmadi!"
+          exit 1
+        fi
+    
+    - name: Upload Binary
+      uses: actions/upload-artifact@v3
+      if: success()
+      with:
+        name: NURI-Linux
+        path: dist/NURI
